@@ -1,7 +1,7 @@
 #coding=utf-8
 # 进源码啥都别说，先一起喊： 瓦门！
 from static import *
-from games import bomber, chess, truth, poker, uno, dryEye, countryKill, wordle, snakeLadder, richup
+from games import bomber, chess, truth, poker, uno, dryEye, countryKill, wordle, snakeLadder, richup , poker4
 from money import bank, stock, LoanStatus, oddEven, zhaJinHua, blackjack
 
 # OOP, 但不完全OOP
@@ -1173,6 +1173,8 @@ class Awaya:
             zhaJinHua.main(self, sender, msg[2:].strip())
         elif msg.startswith("bj "):
             blackjack.main(self, sender, msg[3:].strip())
+        elif msg.startswith("p4 "):
+            poker4.main(self, sender, msg[3:].strip())
  
         elif msg[0] == "r":
             if msg == "r":
