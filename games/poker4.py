@@ -93,19 +93,28 @@ class SingleHand:
                 self.mults = int(msg[-1])
             else:
                 self.type = self.STRAIGHT
-            STRA={"3":"4","4":"5","5":"6","6":"7","7":"8","8":"9","9":"H","H":"J","J":"Q","Q":"K","K":"A","A":"2","2":"3"}
-            seq=[msg[0]]
-            if msg[0]=="A" and msg[2]=="A":
-                while len(seq)<14:
-                    seq.append(STRA[seq[-1]])
+            STRA= ["A","2","3","4","5","6","7","8","9","H","J","Q","K","A"]
+            st=msg[0],ed=msg[2]
+            if st=="A" and ed=="A":
+                sp=0,ep=13
+            elif st=="A":
+                sp=0,ep=STRA.index(ed)
+            elif ed == "A":
+                sp=STRA.index(st),ep=13
             else:
-                while seq[-1]!=msg[2]:
-                    seq.append(STRA[seq[-1]])
-            self.length=len(seq)
-            if msg[2]=="2":
-                self.msg="顺子不能以2结尾（不可出JQKA2）"
+                sp=STRA.index(st),ep=STRA.index(ed)
+            if sp>=ep:
+                self.msg="牌型不合法:/"
                 self.type=None
-            elif self.mults == 1 and self.length < 5:
+                return
+            if "*" in msg:
+                self.type = self.MULT_STRAIGHT
+                self.mults = int(msg[-1])
+            else:
+                self.type = self.STRAIGHT
+
+            self.length = ep- sp+ 1
+            if self.mults == 1 and self.length < 5:
                 self.msg = "顺子至少5张"
                 self.type = None
             elif self.mults == 2 and self.length < 3:
@@ -115,7 +124,7 @@ class SingleHand:
                 self.msg = "三顺至少2张"
                 self.type = None
             self.max_num = msg[2]
-            for num in seq:
+            for num in range(sp,ep+1):
                 self.all_cards += num * self.mults
         # 三带一、三带对
         elif ReType.THREE_WITH.fullmatch(msg):
@@ -566,7 +575,7 @@ class Poker:
                 self.context.appText(f"轮到 @{player} 了,请叫分~")
         elif player==self.last_player:
             self.last_hand = SingleHand()
-            self.context.appText(f"所有人玩家都不要，@{player} 继续出牌")
+            self.context.appText(f"所有玩家都不要，@{player} 继续出牌")
         else:
             self.context.appText(f"轮到 @{player}")
 
@@ -712,12 +721,19 @@ class Poker:
             )
             if hand.type == SingleHand.ROCKET:
                 self.last_hand = SingleHand()
-                self.context.appText(f"@{player} 继续出牌")
+                if not player.cards:
+                    self.last_player=player
+                    self._check_end()
+                else:
+                    self.context.appText(f"@{player} 继续出牌")
                 self._check_end()
                 return
 
         self.last_hand = hand
         self.last_player = player
+        if not player.cards:
+            self._check_end()
+            return
         self._next_player()
 
     def play(self, sender: str, trip: str, msg: str):
