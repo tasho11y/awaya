@@ -94,7 +94,8 @@ class SingleHand:
             else:
                 self.type = self.STRAIGHT
             STRA= ["A","2","3","4","5","6","7","8","9","H","J","Q","K","A"]
-            st=msg[0],ed=msg[2]
+            st=msg[0]
+            ed=msg[2]
             if st=="A" and ed=="A":
                 sp=0
                 ep=13
