@@ -96,24 +96,22 @@ class SingleHand:
             STRA= ["A","2","3","4","5","6","7","8","9","H","J","Q","K","A"]
             st=msg[0],ed=msg[2]
             if st=="A" and ed=="A":
-                sp=0,ep=13
+                sp=0
+                ep=13
             elif st=="A":
-                sp=0,ep=STRA.index(ed)
+                sp=0
+                ep=STRA.index(ed)
             elif ed == "A":
-                sp=STRA.index(st),ep=13
+                sp=STRA.index(st)
+                ep=13
             else:
-                sp=STRA.index(st),ep=STRA.index(ed)
+                sp=STRA.index(st)
+                ep=STRA.index(ed)
             if sp>=ep:
                 self.msg="牌型不合法:/"
                 self.type=None
                 return
-            if "*" in msg:
-                self.type = self.MULT_STRAIGHT
-                self.mults = int(msg[-1])
-            else:
-                self.type = self.STRAIGHT
-
-            self.length = ep- sp+ 1
+            self.length=ep-sp+1
             if self.mults == 1 and self.length < 5:
                 self.msg = "顺子至少5张"
                 self.type = None
